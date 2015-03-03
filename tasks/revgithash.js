@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 
           tallyfiles++;
 
-          var renamed = [revision, path.basename(filepath)].join('.'),
+          var renamed = [path.basename(filepath), revision].join('_'),
               destfile = path.resolve(path.dirname(filepath), renamed);
 
           fs.renameSync(filepath, destfile);
@@ -45,6 +45,8 @@ module.exports = function(grunt) {
           grunt.log.write(filepath + ' ').ok(renamed);
         });
       });
+
+      grunt.config.set('git_revision', revision)
 
       grunt.log.writeln('Renamed ' + tallyfiles.toString().cyan + ' files.');
       done(true);
