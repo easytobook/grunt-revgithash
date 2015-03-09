@@ -27,6 +27,10 @@ module.exports = function(grunt) {
       short: true
     });
 
+    if (!options.separator) {
+      options.separator = options.separator || '/'
+    }
+
     renameFiles = function () {
       var tallyfiles = 0;
       grunt.log.writeln('Renaming files... ');
@@ -36,10 +40,14 @@ module.exports = function(grunt) {
 
           tallyfiles++;
 
-          var renamed = [path.basename(filepath), revision].join('_'),
+          var renamed = [path.basename(filepath), revision].join(options.separator),
               destfile = path.resolve(path.dirname(filepath), renamed);
 
-          fs.renameSync(filepath, destfile);
+          if (fs.existsSync(filepath)) {
+            fs.renameSync(filepath, filepath + '_'); // rename to temp dir
+            fs.mkdirSync(path.dirname(destfile)); // create destination dir
+            fs.renameSync(filepath + '_', destfile); // rename to destination
+          }
 
           // Print a success message.
           grunt.log.write(filepath + ' ').ok(renamed);
